@@ -4,10 +4,9 @@ const cloudinary = require("cloudinary").v2;
 const app = express();
 
 cloudinary.config({
-  // cloud_name: processs.env.CLOUD_NAME
-  cloud_name: "dk92l1yoc",
-  api_key: "769888332458168",
-  api_secret: "7Kh-q81hHRdyDNiBxISrouGEFCo",
+  cloud_name: 'denq3oyye',
+  api_key: '533768652128115',
+  api_secret: '<API_KEY>'
 });
 
 app.set("view engine", "ejs");
@@ -23,34 +22,28 @@ app.use(
 );
 
 app.get("/myget", (req, res) => {
-  console.log(req.body);
-
-  res.send(req.body);
+  res.send(req.query);
 });
 
 app.post("/mypost", async (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
 
   let result;
   let imageArray = [];
 
-  // case - multiple images
-
   if (req.files) {
-    for (let index = 0; index < req.files.samplefile.length; index++) {
-      let result = await cloudinary.uploader.upload(
-        req.files.samplefile[index].tempFilePath,
-        {
-          folder: "users",
-        }
-      );
-
-      imageArray.push({
-        public_id: result.public_id,
-        secure_url: result.secure_url,
+    try {
+      let file = req.files.samplefile;
+      result = await cloudinary.uploader.upload(file.tempFilePath, {
+        folder: "users",
       });
+    } catch (error) {
+      console.log(error);
     }
+
+    imageArray.push({
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+    });
   }
 
   // ### use case for single image
@@ -59,15 +52,12 @@ app.post("/mypost", async (req, res) => {
   //   folder: "users",
   // });
 
-  console.log(result);
-
   details = {
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     result,
     imageArray,
   };
-  console.log(details);
 
   res.send(details);
 });
